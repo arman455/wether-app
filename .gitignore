@@ -9,6 +9,7 @@ dist/
 web-build/
 expo-env.d.ts
 .react
+/assets/countries-ukr.json
 
 # Native
 .kotlin/

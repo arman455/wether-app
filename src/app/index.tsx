@@ -5,9 +5,11 @@ import { useEffect, useState } from "react";
 import * as Font from 'expo-font';
 import { Button } from "../shared/ui/button/button";
 import SunnyIcon from "../shared/ui/icons/sunny-plus-windy-icon";
+import { useRouter } from "expo-router";
 
 export default function Index() {
     const [fontsLoaded, setFontsLoaded] = useState(false);
+    const router = useRouter()
 
     useEffect(() => {
         Font.loadAsync({
@@ -16,7 +18,7 @@ export default function Index() {
     }, []);
 
     function onPress() {
-
+        router.push('/city')
     }
 
     return (
@@ -27,7 +29,7 @@ export default function Index() {
             end={{ x: 0, y: 1 }}
         >
             <SafeAreaView style={styles.container} edges={['top']}>
-                <SunnyIcon width={230} height={230}/>
+                <SunnyIcon width={200} height={200}/>
                 <View style={styles.mainDiv}>
                     <View style={{gap: 24, alignItems: "center", justifyContent: "center"}}>
                         <Text style={styles.header}>Вітаємо у додатку!</Text>

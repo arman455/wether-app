@@ -5,7 +5,7 @@ import { styles } from "./button.style"
 import { useEffect, useState } from "react";
 
 export function Button(props: IButton) {
-    const { name } = props
+    const { name, onPress } = props
     const [fontsLoaded, setFontsLoaded] = useState(false);
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export function Button(props: IButton) {
     if (!fontsLoaded) return null;
 
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={onPress}>
             <Text style={[styles.text, {fontFamily: "GTWalsheimPro-Medium"}]}>{name}</Text>
         </TouchableOpacity>
     )
