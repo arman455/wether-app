@@ -4,38 +4,52 @@ import SunnyIcon from "../../../../shared/ui/icons/sunny-plus-windy-icon";
 import { styles } from "./choosePage.style";
 import { View, Text, Alert } from "react-native";
 import { Button } from "../../../../shared/ui/button/button";
-import SelectDropdown from "react-native-select-dropdown";
-import { useEffect, useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "expo-router";
 import { CustomDropdown } from "../../../../shared/ui/selector/selector";
-import { useGetCountry } from "../../hooks/useGetCountry";
-import { useGetCitiesByCountry } from "../../hooks/useGetCities";
+import { useGetCountries } from "../../hooks/useGetCountry";
+import { useGetCities } from "../../hooks/useGetCities";
+import { ICity, ICountry } from "../../types/type";
+import { DropdownRef } from "../../../../shared/types/selector";
 
 export function ChoosePage() {
-    const [selectedCity, setSelectedCity] = useState<string | null>(null);
-    const [selectedCountry, setSelectedContry] = useState<string | null>(null);
-    const [choose, setChoose] = useState()
-    const { cities } = useGetCitiesByCountry(selectedCountry);
-    const { countryNames } = useGetCountry()
+    const [selectedCity, setSelectedCity] = useState<ICity | null>(null);
+    const [selectedCountry, setSelectedCountry] = useState<ICountry | null>(null);
+    const { countries, isLoading: isLoadingCountries } = useGetCountries();
+    const { cities, isLoading: isLoadingCities } = useGetCities(selectedCountry?.iso2);
     const router = useRouter();
+    
+    const cityDropdownRef = useRef<DropdownRef>(null);
+    const countryDropdownRef = useRef<DropdownRef>(null);
 
-    function onPress() {
+    const handleCountrySelect = useCallback((country: ICountry) => {
+        setSelectedCountry(country);
+        setSelectedCity(null);
+        cityDropdownRef.current?.close();
+    }, []);
 
+    const handleCitySelect = useCallback((city: ICity) => {
+        setSelectedCity(city);
+    }, []);
+
+    const handleContinue = useCallback(() => {
         if (!selectedCountry) {
-            Alert.alert("Помилка", "Будь ласка, оберіть країну перед продовженням.");
+            Alert.alert("Помилка", "Будь ласка, оберіть країну");
             return;
         }
-
         if (!selectedCity) {
-            Alert.alert("Помилка", "Будь ласка, оберіть місто перед продовженням.");
+            Alert.alert("Помилка", "Будь ласка, оберіть місто");
             return;
         }
 
         router.push({
             pathname: "/city",
-            params: { selectedCity: selectedCity, selectedContry: selectedCountry },
+            params: { 
+                city: selectedCity.name, 
+                country: selectedCountry.name 
+            },
         });
-    }
+    }, [selectedCountry, selectedCity, router]);
 
     return (
         <SafeAreaView style={styles.main} edges={['top']}>
@@ -43,22 +57,43 @@ export function ChoosePage() {
             <View style={styles.container}>
                 <SunnyIcon width={200} height={200} />
                 <View style={styles.mainDiv}>
-                    <View style={{ gap: 24, alignItems: "center", justifyContent: "center" }}>
+                    <View style={styles.contentWrapper}>
                         <Text style={styles.header}>Обери своє місто</Text>
-                        <View style={{ gap: 16 }}>
+                        
+                        <View style={styles.dropdownsContainer}>
                             <CustomDropdown
-                                data={countryNames}
-                                onSelect={(item) => setSelectedContry(item)}
-                                placeholder="Введіть назву країни"
+                                ref={countryDropdownRef}
+                                data={countries}
+                                onSelect={handleCountrySelect}
+                                placeholder="Оберіть країну"
+                                disabled={false}
                             />
-                            <CustomDropdown
-                                data={cities}
-                                onSelect={(item) => setSelectedCity(item)}
-                                placeholder="Введіть назву міста"
-                            />
+                            
+                            <View style={styles.cityDropdownWrapper}>
+                                {selectedCountry ? (
+                                    <CustomDropdown
+                                        ref={cityDropdownRef}
+                                        data={cities}
+                                        onSelect={handleCitySelect}
+                                        placeholder="Оберіть місто"
+                                        disabled={!selectedCountry}
+                                    />
+                                ) : (
+                                    <View style={styles.disabledDropdown}>
+                                        <Text style={styles.disabledText}>
+                                            Спочатку оберіть країну
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
                         </View>
                     </View>
-                    <Button name="Продовжити" onPress={onPress} />
+
+                    <Button 
+                        name="Продовжити" 
+                        onPress={handleContinue}
+                        disabled={!selectedCity || !selectedCountry}
+                    />
                 </View>
             </View>
         </SafeAreaView>

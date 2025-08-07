@@ -10,6 +10,7 @@ web-build/
 expo-env.d.ts
 .react
 /assets/countries-ukr.json
+/src/settings/settings.ts
 
 # Native
 .kotlin/

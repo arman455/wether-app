@@ -1,6 +1,12 @@
 
 export interface ICountry {
-    code: string;
+    id: number,
     name: string;
-    english: string;
+    iso2: string;
+    uk: string;
+}
+
+export interface ICity{
+    id: number,
+    name: string
 }
