@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
         width: 335,
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 44,
+        gap: 24,
     },
     header: {
         color: "#0D133F",
@@ -52,9 +52,8 @@ export const styles = StyleSheet.create({
     dropdownsContainer: {
         gap: 16,
         width: '100%',
-    },
-    cityDropdownWrapper: {
-        minHeight: 60, // Щоб не "стрибав" layout при завантаженні
+        alignItems: "center",
+        justifyContent: "center"
     },
     disabledDropdown: {
         width: '100%',

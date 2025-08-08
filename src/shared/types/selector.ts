@@ -1,17 +1,18 @@
-
-export interface DropdownProps {
-    data: { name: string;[key: string]: any }[];
-    placeholder: string;
-    disabled: boolean;
-    onSelect: (item: any) => void;
-}
-
 export interface DropdownItem {
     name: string;
-    originalName?: string;
-    [key: string]: any;
+    uk?: string;
+    iso2?: string;
 }
 
-export type DropdownRef = {
+export interface DropdownRef {
     close: () => void;
-};
+}
+
+export interface DropdownProps {
+    data: DropdownItem[];
+    placeholder: string;
+    onSelect: (item: DropdownItem | null) => void;
+    disabled?: boolean;
+    maxHeight?: number;
+    onFocus?: () => void; // Додаємо onFocus
+}

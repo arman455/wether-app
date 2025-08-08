@@ -14,50 +14,51 @@ import ClearIcon from '../icons/clear';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export const CustomDropdown = forwardRef<DropdownRef, DropdownProps>((props, ref) => {
-    const { data, placeholder, onSelect, disabled } = props;
+    const { data, placeholder, onSelect, disabled, maxHeight, onFocus } = props;
     const [searchQuery, setSearchQuery] = useState('');
     const [isOpen, setIsOpen] = useState(false);
 
-    const filteredData = data.filter((item: DropdownItem) => {
-        if (!item) {
-            console.warn("Invalid item in dropdown data:", item);
-            return false;
-        }
-        const searchLower = searchQuery.toLowerCase();
-        return (
-            item.name.toLowerCase().includes(searchLower) ||
-            (item.originalName && item.originalName.toLowerCase().includes(searchLower))
-        );
-    });
-
+    // Додаємо метод close для зовнішнього управління
     useImperativeHandle(ref, () => ({
         close: () => {
             setIsOpen(false);
-            Keyboard.dismiss();
+            setSearchQuery('');
         }
     }));
 
-    const handleSelect = (item: DropdownItem) => {
-        setSearchQuery(item.name);
+    const filteredData = data.filter((item: DropdownItem) => {
+        if (!item) {
+            console.warn("Invalid data:", item);
+            return false;
+        }
+        const displayName = item.uk || item.name;
+        const searchLower = searchQuery.toLowerCase();
+        return displayName.toLowerCase().includes(searchLower);
+    });
+
+    function handleSelect(item: DropdownItem) {
+        const displayName = item.uk || item.name;
+        setSearchQuery(displayName);
         onSelect(item);
         setIsOpen(false);
         Keyboard.dismiss();
-    };
+    }
 
-    const handleFocus = () => {
+    function handleFocus() {
         if (!disabled) {
             setIsOpen(true);
+            onFocus?.(); // Викликаємо onFocus, якщо він переданий
         }
-    };
+    }
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity 
+            <TouchableOpacity
                 activeOpacity={1}
                 onPress={handleFocus}
                 disabled={disabled}
             >
-                <View style={[styles.searchContainer, disabled && styles.disabled]}>
+                <View style={[styles.searchContainer, disabled && { opacity: 0.5 }]}>
                     <SearchIcon width={18} height={18} />
                     <TextInput
                         style={styles.searchInput}
@@ -70,17 +71,20 @@ export const CustomDropdown = forwardRef<DropdownRef, DropdownProps>((props, ref
                         pointerEvents={disabled ? 'none' : 'auto'}
                     />
                     {searchQuery.length > 0 && !disabled && (
-                        <TouchableOpacity onPress={() => setSearchQuery('')}>
+                        <TouchableOpacity onPress={() => {
+                            setSearchQuery('');
+                            onSelect(null);
+                        }}>
                             <ClearIcon width={18} height={18} />
                         </TouchableOpacity>
                     )}
                 </View>
             </TouchableOpacity>
 
-            {isOpen && (
+            {isOpen && !disabled && (
                 <LinearGradient
                     colors={['#00000033', '#00000033']}
-                    style={styles.dropdown}
+                    style={[styles.dropdown, { maxHeight: maxHeight }]}
                 >
                     {filteredData.length > 0 ? (
                         <>
@@ -89,14 +93,17 @@ export const CustomDropdown = forwardRef<DropdownRef, DropdownProps>((props, ref
                                 data={filteredData}
                                 keyExtractor={(item, index) => item.name + index}
                                 keyboardShouldPersistTaps="handled"
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity 
-                                        style={styles.item} 
-                                        onPress={() => handleSelect(item)}
-                                    >
-                                        <Text style={styles.text}>{item.name}</Text>
-                                    </TouchableOpacity>
-                                )}
+                                renderItem={({ item }) => {
+                                    const displayName = item.uk || item.name;
+                                    return (
+                                        <TouchableOpacity
+                                            style={styles.item}
+                                            onPress={() => handleSelect(item)}
+                                        >
+                                            <Text style={styles.text}>{displayName}</Text>
+                                        </TouchableOpacity>
+                                    );
+                                }}
                             />
                         </>
                     ) : (
@@ -124,9 +131,6 @@ const styles = StyleSheet.create({
         gap: 5,
         paddingHorizontal: 10
     },
-    disabled: {
-        opacity: 0.5,
-    },
     searchInput: {
         flex: 1,
         color: 'white',
@@ -141,7 +145,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         shadowColor: '#00000033',
         shadowRadius: 4,
-        maxHeight: 232,
+        maxHeight: 175,
         padding: 8,
         zIndex: 1000,
     },
