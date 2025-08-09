@@ -38,5 +38,11 @@ export const styles = StyleSheet.create({
         color: "white",
         textAlign: "center"
     },
+    currentItem: {
+        backgroundColor: "#FFFFFF33",
+        borderWidth: 1,
+        borderColor: "#FFFFFF33",
+        borderRadius: 90,
+    }
 
 })

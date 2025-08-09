@@ -37,7 +37,8 @@ export const styles = StyleSheet.create({
     },
     day: {
         color: "#fff",
-        width: 60,
+        fontSize: 16,
+        fontWeight: 500,
     },
     iconWrapper: {
         width: 30,
@@ -49,7 +50,7 @@ export const styles = StyleSheet.create({
         textAlign: "center",
     },
     gradient: {
-        width: 8,
+        maxWidth: 60,
         height: 10,
         borderRadius: 60,
         flex: 1,
