@@ -9,9 +9,13 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/config-plugins": "~10.1.1",
+    "@expo/prebuild-config": "~9.0.0",
     "@react-native-picker/picker": "2.11.1",
+    "eas-cli": "^16.17.4",
     "expo": "~53.0.20",
     "expo-blur": "~14.1.5",
+    "expo-dev-client": "~5.2.4",
     "expo-font": "~13.3.2",
     "expo-linear-gradient": "~14.1.5",
     "expo-router": "~5.1.4",
@@ -28,5 +32,12 @@
     "@types/react": "~19.0.10",
     "typescript": "~5.8.3"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false
+      }
+    }
+  }
 }

@@ -26,7 +26,6 @@ export function WeatherForDay() {
         function updateTime() {
             const now = new Date();
             const hours = now.getHours().toString().padStart(2, '0');
-            console.log(hours)
             const minutes = now.getMinutes().toString().padStart(2, '0');
             setCurrentTime(`${hours}:${minutes}`);
         };
@@ -122,7 +121,7 @@ export function WeatherForDay() {
         }
     }
 
-    console.log(weatherData?.daily.map((item) => item.icon.slice(41)))
+    // console.log(weatherData?.daily.map((item) => item.icon.slice(41)))
 
 
     function getIcon(time: string, iconUrl: string) {
