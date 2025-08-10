@@ -27,10 +27,6 @@ export const styles = StyleSheet.create({
         height: 88,
         alignItems: "center",
         justifyContent: "space-around",
-        // backgroundColor: "#FFFFFF33",
-        // borderWidth: 1,
-        // borderColor: "#FFFFFF33",
-        // borderRadius: 90,
     },
     time: {
         fontSize: 14,

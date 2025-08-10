@@ -20,21 +20,22 @@ export function useGetCountries() {
                     },
                 });
 
+                console.log(response)
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const apiCountries: Array<{ name: string; iso2: string }> = await response.json();
 
-                // Форматуємо дані, використовуючи українські назви з JSON-файлу
                 const formattedCountries: ICountry[] = apiCountries.map((country, idx) => {
                     const ukrCountry = countriesUkr.find(c => c.code === country.iso2);
 
                     return {
                         id: idx,
-                        name: country.name, // оригінальна назва (англійська)
-                        iso2: country.iso2,   // код країни
-                        uk: ukrCountry ? ukrCountry.name : country.name // українська назва або оригінал, якщо не знайдено
+                        name: country.name, 
+                        iso2: country.iso2,   
+                        uk: ukrCountry ? ukrCountry.name : country.name
                     };
                 });
 

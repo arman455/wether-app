@@ -8,7 +8,7 @@ export interface ICountry {
 
 export interface ICity{
     id: number,
-    name: string
+    name: string,
 }
 
 export interface WeatherCondition {

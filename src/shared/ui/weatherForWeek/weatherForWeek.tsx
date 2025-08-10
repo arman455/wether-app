@@ -21,7 +21,7 @@ export function WeatherForWeek() {
     const { city } = useLocalSearchParams<{ city: string }>()
     const { data: weatherData } = useWeather(city)
 
-    console.log(weatherData?.daily.map((item) => item.icon.slice(41,42)))
+
 
     return (
         <View style={styles.container}>
@@ -34,32 +34,35 @@ export function WeatherForWeek() {
                 {weatherData?.daily.map((item, index) => (
                     <View key={index} style={styles.item}>
                         <Text style={styles.day}>
-                            {new Date(item.date).toLocaleDateString("uk-UA", { weekday: "short" }).toUpperCase()}
+                            {new Date(item.date).toDateString() === new Date().toDateString()
+                                ? "Сьогодні"
+                                : new Date(item.date).toLocaleDateString("uk-UA", { weekday: "short" }).toUpperCase()}
                         </Text>
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                            <View style={styles.iconWrapper}>
+                                {item.icon.slice(45, 48) === "113" ? <SunySoloIcon width={24} height={24} /> : null}
+                                {item.icon.slice(45, 48) === "116" ? <SunnyDayIcon width={24} height={24} /> : null}
+                                {item.icon.slice(45, 48) === "119" || item.icon.slice(45, 48) === "122" ? <CloudyIcon width={24} height={24} /> : null}
+                                {item.icon.slice(45, 48) === "176" ? <Icon176 width={24} height={24} /> : null}
+                                {item.icon.slice(45, 48) === "200" ? <LightsIcon width={24} height={24} /> : null}
+                                {item.icon.slice(45, 48) === "296" ? <Icon296 width={24} height={24} /> : null}
+                                {item.icon.slice(45, 48) === "305" ? <RainIcon width={24} height={24} /> : null}
+                                {item.icon.slice(45, 48) === "302" ? <Icon302 width={24} height={24} /> : null}
+                                {item.icon.slice(45, 48) === "308" ? <Icon308 width={24} height={24} /> : null}
+                                {item.icon.slice(41, 42) === "n" ? <NightIcon width={24} height={24} /> : null}
+                            </View>
+                            <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 5, justifyContent: "space-around" }}>
+                                <Text style={styles.temp}>{item.min.toString().slice(0, 2)}</Text>
 
-                        <View style={styles.iconWrapper}>
-                            {item.icon.slice(45,48) === "113" ? <SunySoloIcon width={24} height={24} /> : null}
-                            {item.icon.slice(45,48) === "116" ? <SunnyDayIcon width={24} height={24} /> : null}
-                            {item.icon.slice(45,48) === "119" || item.icon.slice(45,48) === "122" ? <CloudyIcon width={24} height={24} /> : null}
-                            {item.icon.slice(45,48) === "176" ? <Icon176 width={24} height={24} /> : null}
-                            {item.icon.slice(45,48) === "200" ? <LightsIcon width={24} height={24} /> : null}
-                            {item.icon.slice(45,48) === "296" ? <Icon296 width={24} height={24} /> : null}
-                            {item.icon.slice(45,48) === "305" ? <RainIcon width={24} height={24} /> : null}
-                            {item.icon.slice(45,48) === "302" ? <Icon302 width={24} height={24} /> : null}
-                            {item.icon.slice(45,48) === "308" ? <Icon308 width={24} height={24} /> : null}
-                            {item.icon.slice(41,42) === "n" ? <NightIcon width={24} height={24} /> : null}
-                        </View>
-                        <View style={{flexDirection: "row", gap: 10, alignItems: "center", paddingHorizontal: 10}}>
-                            <Text style={styles.day}>{item.min.toString().slice(0, 2)}°</Text>
+                                <LinearGradient
+                                    colors={["#4DB6FF", "#FFD54F"]}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    style={styles.gradient}
+                                />
 
-                            <LinearGradient
-                                colors={["#4DB6FF", "#FFD54F"]}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 0 }}
-                                style={styles.gradient}
-                            />
-
-                            <Text style={styles.day}>{item.max.toString().slice(0, 2)}°</Text>
+                                <Text style={styles.temp}>{item.max.toString().slice(0, 2)}</Text>
+                            </View>
                         </View>
                     </View>
                 ))}

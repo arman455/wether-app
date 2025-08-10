@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo, useState } from "react";
-import { SafeAreaView, FlatList, Text, View } from "react-native";
+import { SafeAreaView, FlatList, Text, View, InteractionManager } from "react-native";
 import { styles } from "./weatherForDay.style";
 import SunnyDayIcon from "../icons/sunny-day-icon";
 import NightIcon from "../icons/night-icon";
@@ -7,6 +7,15 @@ import SunSetIcon from "../icons/sunset-icon";
 import { useWeather } from "../../../modules/wether/hooks/useWeather";
 import { useLocalSearchParams } from "expo-router";
 import SunriseIcon from "../icons/sunrise-icon";
+import SunySoloIcon from "../icons/suny-solo-icon";
+import CloudyIcon from "../icons/cloudy-icon";
+import LightsIcon from "../icons/lights";
+import Icon176 from "../icons/176";
+import Icon296 from "../icons/296";
+import RainIcon from "../icons/rain-icon";
+import Icon308 from "../icons/308";
+import Icon302 from "../icons/302";
+import Icon176Night from "../icons/176Night";
 
 export function WeatherForDay() {
     const { city } = useLocalSearchParams<{ city: string }>();
@@ -14,9 +23,10 @@ export function WeatherForDay() {
     const [currentTime, setCurrentTime] = useState<string>("");
 
     useEffect(() => {
-        const updateTime = () => {
+        function updateTime() {
             const now = new Date();
             const hours = now.getHours().toString().padStart(2, '0');
+            console.log(hours)
             const minutes = now.getMinutes().toString().padStart(2, '0');
             setCurrentTime(`${hours}:${minutes}`);
         };
@@ -26,7 +36,6 @@ export function WeatherForDay() {
 
         return () => clearInterval(interval);
     }, []);
-    console.log(currentTime)
 
     const hourlyData = useMemo(() => {
         if (!weatherData) return [];
@@ -34,22 +43,26 @@ export function WeatherForDay() {
         const arr = weatherData.hourly.map(h => ({
             time: h.time.slice(-5),
             temp: `${Math.round(h.temp_c)}°`,
+            icon: h.icon,
             isCurrent: false
         }));
 
         arr.push({
             time: to24HourFormat(weatherData.sunset),
             temp: "",
+            icon: "",
             isCurrent: false
         });
         arr.push({
             time: to24HourFormat(weatherData.sunrise),
             temp: "",
+            icon: "",
             isCurrent: false
         });
         arr.push({
-            time: "Зараз",
+            time: currentTime,
             temp: weatherData.current.temp_c.toString(),
+            icon: weatherData.current.icon,
             isCurrent: true
         });
 
@@ -70,74 +83,130 @@ export function WeatherForDay() {
         return nearest.condition;
     }, [weatherData]);
 
-    const data = useMemo(
-        () => [...hourlyData, ...hourlyData, ...hourlyData],
-        [hourlyData]
-    );
+    const data = useMemo(() => [...hourlyData, ...hourlyData, ...hourlyData], [hourlyData]);
 
     const flatListRef = useRef<FlatList>(null);
     const baseLength = hourlyData.length;
 
+    const currentIndex = useMemo(() => {
+        return hourlyData.findIndex(item => item.isCurrent);
+    }, [hourlyData]);
+
     useEffect(() => {
-        if (baseLength > 0) {
+        if (baseLength > 0 && currentIndex !== -1) {
             setTimeout(() => {
                 flatListRef.current?.scrollToIndex({
-                    index: baseLength,
+                    index: baseLength + currentIndex,
                     animated: false,
+                    viewPosition: 0.5
                 });
             }, 100);
         }
-    }, [baseLength]);
+    }, [baseLength, currentIndex]);
 
     function handleScrollEnd(event: any) {
-        let contentOffsetX = event.nativeEvent.contentOffset.x;
-        let itemWidth = 70;
-        let index = Math.round(contentOffsetX / itemWidth);
+        const contentOffsetX = event.nativeEvent.contentOffset.x;
+        const itemWidth = 51;
+        const index = Math.round(contentOffsetX / itemWidth);
 
-        if (index < baseLength / 2) {
-            flatListRef.current?.scrollToIndex({
-                index: index + baseLength,
+        if (index <= baseLength * 0.5) {
+            flatListRef.current?.scrollToOffset({
+                offset: (index + baseLength) * itemWidth,
                 animated: false,
             });
         } else if (index >= baseLength * 1.5) {
-            flatListRef.current?.scrollToIndex({
-                index: index - baseLength,
+            flatListRef.current?.scrollToOffset({
+                offset: (index - baseLength) * itemWidth,
                 animated: false,
             });
         }
     }
 
-    function getIcon(time: string) {
-        if (weatherData) {
-            if (time === to24HourFormat(weatherData?.sunset)) return <SunSetIcon width={24} height={19} />;
-            if (time === to24HourFormat(weatherData?.sunrise)) return <SunriseIcon width={24} height={19} />;
+    console.log(weatherData?.daily.map((item) => item.icon.slice(41)))
 
-            const hourNum = parseInt(time.split(':')[0]);
-            const sunriseHour = parseInt(to24HourFormat(weatherData?.sunrise).split(':')[0]);
-            const sunsetHour = parseInt(to24HourFormat(weatherData?.sunset).split(':')[0]);
 
-            if (hourNum >= sunriseHour && hourNum <= sunsetHour) {
-                return <SunnyDayIcon width={24} height={19} />;
-            }
+    function getIcon(time: string, iconUrl: string) {
+        if (!weatherData) return <NightIcon width={24} height={19} />;
+
+        if (time === to24HourFormat(weatherData?.sunset)) {
+            return <SunSetIcon width={24} height={19} />;
         }
-        return <NightIcon width={24} height={19} />;
+        if (time === to24HourFormat(weatherData?.sunrise)) {
+            return <SunriseIcon width={24} height={19} />;
+        }
+
+        const iconCode = iconUrl.slice(45, 48);
+        const isNight = iconUrl.slice(41, 42);
+
+        switch (isNight) {
+            case "d":
+                switch (iconCode) {
+                    case "113":
+                        return <SunySoloIcon width={24} height={24} />;
+                    case "116":
+                        return <SunnyDayIcon width={24} height={24} />;
+                    case "119":
+                    case "122":
+                        return <CloudyIcon width={24} height={24} />;
+                    case "176":
+                        return <Icon176 width={24} height={24} />;
+                    case "200":
+                        return <LightsIcon width={24} height={24} />;
+                    case "296":
+                        return <Icon296 width={24} height={24} />;
+                    case "302":
+                        return <Icon302 width={24} height={24} />;
+                    case "305":
+                        return <RainIcon width={24} height={24} />;
+                    case "308":
+                        return <Icon308 width={24} height={24} />;
+                    default:
+                        return <SunnyDayIcon width={24} height={24} />;
+                }
+
+            case "n":
+                switch (iconCode) {
+                    case "113":
+                        return <NightIcon width={24} height={24} />;
+                    case "116":
+                    case "119":
+                    case "122":
+                        return <CloudyIcon width={24} height={24} />;
+                    case "176":
+                        return <Icon176Night width={24} height={24} />;
+                    case "200":
+                        return <LightsIcon width={24} height={24} />;
+                    case "296":
+                        return <Icon296 width={24} height={24} />;
+                    case "302":
+                        return <Icon302 width={24} height={24} />;
+                    case "305":
+                        return <RainIcon width={24} height={24} />;
+                    case "308":
+                        return <Icon308 width={24} height={24} />;
+                    default:
+                        return <NightIcon width={24} height={24} />;
+                }
+
+            default:
+                return null;
+        }
     }
+
 
     function to24HourFormat(time12h: string) {
         if (!time12h) return "";
         const [time, modifier] = time12h.split(" ");
         let [hours, minutes] = time.split(":").map(Number);
 
-        if (modifier?.toLowerCase() === "pm" && hours < 12) {
+        if (modifier === "PM" && hours < 12) {
             hours += 12;
         }
-        if (modifier?.toLowerCase() === "am" && hours === 12) {
+        if (modifier === "AM" && hours === 12) {
             hours = 0;
         }
 
-        return `${hours.toString().padStart(2, "0")}:${minutes
-            .toString()
-            .padStart(2, "0")}`;
+        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
     }
 
     function getBottomText(time: string, temp: string) {
@@ -155,6 +224,16 @@ export function WeatherForDay() {
             </SafeAreaView>
         );
     }
+
+    const HourItem = React.memo(({ item, getIcon, getBottomText }: any) => {
+        return (
+            <View style={[styles.item, item.isCurrent && styles.currentItem]}>
+                <Text style={styles.time}>{item.time.slice(0, 5)}</Text>
+                {getIcon(item.time, item.icon)}
+                <Text style={styles.time}>{getBottomText(item.time, item.temp)}</Text>
+            </View>
+        );
+    });
 
     return (
         <SafeAreaView style={styles.container}>
@@ -177,21 +256,18 @@ export function WeatherForDay() {
                 keyExtractor={(_, index) => index.toString()}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => (
-                    <View style={[styles.item, item.isCurrent && styles.currentItem]}>
-                        <Text style={styles.time}>{item.time.slice(0, 5)}</Text>
-                        {getIcon(item.time)}
-                        <Text style={styles.time}>
-                            {getBottomText(item.time, item.temp)}
-                        </Text>
-                    </View>
+                    <HourItem item={item} getIcon={getIcon} getBottomText={getBottomText} />
                 )}
                 getItemLayout={(_, index) => ({
-                    length: 70,
-                    offset: 70 * index,
+                    length: 51,
+                    offset: 51 * index,
                     index,
                 })}
                 onMomentumScrollEnd={handleScrollEnd}
                 initialScrollIndex={baseLength}
+                removeClippedSubviews={true}
+                maxToRenderPerBatch={10}
+                windowSize={5}
             />
         </SafeAreaView>
     );

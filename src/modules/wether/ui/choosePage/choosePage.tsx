@@ -83,7 +83,7 @@ export function ChoosePage() {
             pathname: "/weather",
             params: {
                 city: selectedCity.name,
-                country: selectedCountry.name
+                country: selectedCountry.name,
             },
         });
     }

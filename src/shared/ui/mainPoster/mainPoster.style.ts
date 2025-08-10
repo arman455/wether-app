@@ -18,12 +18,13 @@ export const styles = StyleSheet.create({
         fontSize: 34,
         color: "#FFFFFF",
         fontWeight: 500,
+        textAlign: "center",
+        flexWrap: "wrap"
     },
     content: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        gap: 8,
     },
 
 })

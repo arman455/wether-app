@@ -33,12 +33,15 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: 17,
+        gap: 10,
     },
     day: {
         color: "#fff",
         fontSize: 16,
-        fontWeight: 500,
+        fontWeight: "500",
+        width: 70,
+        minWidth: 32,
+        textAlign: "left",
     },
     iconWrapper: {
         width: 30,
@@ -46,14 +49,17 @@ export const styles = StyleSheet.create({
     },
     temp: {
         color: "#fff",
-        width: 30,
+        fontSize: 16,
+        fontWeight: "500",
+        minWidth: 32,
+        width: 5,
         textAlign: "center",
     },
     gradient: {
-        maxWidth: 60,
+        width: 60,   
         height: 10,
         borderRadius: 60,
-        flex: 1,
+        marginHorizontal: 8,
     },
 
 })

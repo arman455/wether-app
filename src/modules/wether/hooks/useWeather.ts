@@ -71,5 +71,5 @@ export function useWeather(
         fetchWeather();
     }, [fetchWeather]);
 
-    return { data, loading, error, refresh: fetchWeather };
+    return { data, loading, error };
 }
