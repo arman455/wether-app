@@ -1,16 +1,15 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 
 export default function CityLayout() {
     return (
         <View style={{ flex: 1 }}>
-            <LinearGradient
+            {/* <LinearGradient
                 colors={['#FFFFFF', '#B0C4DE']}
                 style={StyleSheet.absoluteFill}
                 start={{ x: 1, y: 0 }}
                 end={{ x: 0, y: 1 }}
-            />
+            /> */}
             <Stack
                 screenOptions={{
                     headerShown: false,

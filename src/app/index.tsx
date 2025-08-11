@@ -1,6 +1,5 @@
 import { View, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
 import * as Font from 'expo-font';
 import { Button } from "../shared/ui/button/button";
@@ -22,12 +21,12 @@ export default function Index() {
     }
 
     return (
-        <LinearGradient
-            colors={['#FFFFFF', '#B0C4DE']}
-            style={styles.container}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 0, y: 1 }}
-        >
+        // <LinearGradient
+        //     colors={['#FFFFFF', '#B0C4DE']}
+        //     style={styles.container}
+        //     start={{ x: 1, y: 0 }}
+        //     end={{ x: 0, y: 1 }}
+        // >
             <SafeAreaView style={styles.container} edges={['top']}>
                 <SunnyIcon width={200} height={200}/>
                 <View style={styles.mainDiv}>
@@ -38,7 +37,7 @@ export default function Index() {
                     <Button name="Обрати місто" onPress={onPress}></Button>
                 </View>
             </SafeAreaView >
-        </LinearGradient>
+        // </LinearGradient>
     )
 }
 
